@@ -1,0 +1,127 @@
+protocolVersion: 2
+name: pytorch_lightning_horovod_e19ff678
+description: >
+  This is a distributed synthetic benchmark for Horovod with PyTorch backend
+  running on OpenPAI.
+
+  It runs [Horovod with Open
+  MPI](https://github.com/horovod/horovod/blob/master/docs/mpirun.rst).
+contributor: OpenPAI
+type: job
+jobRetryCount: 0
+prerequisites:
+  - type: dockerimage
+    uri: 'horovod/horovod:0.16.4-tf1.12.0-torch1.1.0-mxnet1.4.1-py3.5'
+    name: horovod_official
+parameters:
+  nccl: '-x NCCL_DEBUG=INFO -x NCCL_SOCKET_IFNAME=eth0'
+taskRoles:
+  server1:
+    instances: 1
+    completion:
+      minFailedInstances: 1
+      minSucceededInstances: 1
+    dockerImage: horovod_official
+    resourcePerInstance:
+      cpu: 16
+      memoryMB: 16384
+      gpu: 4
+    commands:
+      - >-
+        apt update && apt -y upgrade && apt -y install unzip
+        software-properties-common
+      - 'add-apt-repository -y ppa:deadsnakes/ppa && apt update'
+      - apt -y install python3.7
+      - pip install torch==1.4.0 torchvision==0.5.0
+      - pip install pytorch-lightning
+      - >-
+        git clone https://github.com/andrewjong/PT-Lightning-for-OpenPAI.git
+        pl_examples
+      - bash pl_examples/download_kitti.sh -d data_semantics
+      - pwd && ls -lah
+      - sleep 10
+      - >-
+        horovodrun -np 16 -H server1-0:4,server2-0:4,server3-0:4,server4-0:4
+        python pl_examples/domain_templates/semantic_segmentation.py --data_path
+        data_semantics/ --batch_size 16
+    taskRetryCount: 0
+  server2:
+    instances: 1
+    completion:
+      minFailedInstances: 1
+      minSucceededInstances: 1
+    dockerImage: horovod_official
+    resourcePerInstance:
+      cpu: 16
+      memoryMB: 16384
+      gpu: 4
+    commands:
+      - >-
+        apt update && apt -y upgrade && apt -y install unzip
+        software-properties-common
+      - 'add-apt-repository -y ppa:deadsnakes/ppa && apt update'
+      - apt -y install python3.7
+      - pip install torch==1.4.0 torchvision==0.5.0
+      - pip install pytorch-lightning
+      - >-
+        git clone https://github.com/andrewjong/PT-Lightning-for-OpenPAI.git
+        pl_examples
+      - bash pl_examples/download_kitti.sh -d data_semantics
+      - pwd && ls -lah
+    taskRetryCount: 0
+  server3:
+    instances: 1
+    completion:
+      minFailedInstances: 1
+      minSucceededInstances: 1
+    dockerImage: horovod_official
+    resourcePerInstance:
+      cpu: 16
+      memoryMB: 16384
+      gpu: 4
+    commands:
+      - >-
+        apt update && apt -y upgrade && apt -y install unzip
+        software-properties-common
+      - 'add-apt-repository -y ppa:deadsnakes/ppa && apt update'
+      - apt -y install python3.7
+      - pip install torch==1.4.0 torchvision==0.5.0
+      - pip install pytorch-lightning
+      - >-
+        git clone https://github.com/andrewjong/PT-Lightning-for-OpenPAI.git
+        pl_examples
+      - bash pl_examples/download_kitti.sh -d data_semantics
+      - pwd && ls -lah
+    taskRetryCount: 0
+  server4:
+    instances: 1
+    completion:
+      minFailedInstances: 1
+      minSucceededInstances: 1
+    dockerImage: horovod_official
+    resourcePerInstance:
+      cpu: 16
+      memoryMB: 16384
+      gpu: 4
+    commands:
+      - >-
+        apt update && apt -y upgrade && apt -y install unzip
+        software-properties-common
+      - 'add-apt-repository -y ppa:deadsnakes/ppa && apt update'
+      - apt -y install python3.7
+      - pip install torch==1.4.0 torchvision==0.5.0
+      - pip install pytorch-lightning
+      - >-
+        git clone https://github.com/andrewjong/PT-Lightning-for-OpenPAI.git
+        pl_examples
+      - bash pl_examples/download_kitti.sh -d data_semantics
+      - pwd && ls -lah
+    taskRetryCount: 0
+defaults:
+  virtualCluster: default
+extras:
+  com.microsoft.pai.runtimeplugin:
+    - plugin: ssh
+      parameters:
+        jobssh: true
+        sshbarrier: true
