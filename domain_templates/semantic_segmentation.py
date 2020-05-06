@@ -218,9 +218,9 @@ def main(hparams):
 if __name__ == '__main__':
     parser = ArgumentParser()
     parser.add_argument("--data_path", type=str, help="path where dataset is stored")
-    parser.add_argument("--gpus", type=int, default=-1, help="number of available GPUs")
-    parser.add_argument('--distributed-backend', type=str, default='dp', choices=('dp', 'ddp', 'ddp2'),
-                        help='supports three options dp, ddp, ddp2')
+    parser.add_argument("--gpus", type=int, default=1, help="number of available GPUs")
+    parser.add_argument('--distributed-backend', type=str, default='dp', choices=('dp', 'ddp', 'ddp2', 'horovod'),
+                        help='supports four options dp, ddp, ddp2, horovod')
     parser.add_argument('--use_amp', action='store_true', help='if true uses 16 bit precision')
     parser.add_argument("--batch_size", type=int, default=4, help="size of the batches")
     parser.add_argument("--lr", type=float, default=0.001, help="adam: learning rate")
